@@ -51,6 +51,16 @@ Run **before** the submission dialog opens. Use these to:
 
 Pre-GUI hooks **block the dialog from opening** if they fail (non-zero exit code or timeout).
 
+> **In-application (DCC) submitters** (Maya, Nuke, Blender, Houdini, Cinema 4D, Unreal) run the
+> pre-GUI phase by calling the client's `run_pre_gui_hooks` entry point. On that path:
+> - Hooks are sourced **only** from `DEADLINE_HOOKS_DIR` (there is no on-disk job bundle at pre-GUI
+>   time, so bundle-sourced pre-GUI hooks do not apply and `jobBundleDir` / `DEADLINE_JOB_BUNDLE_DIR`
+>   is empty).
+> - The submitter presents its own confirmation prompt before running hooks (the prompt is injected
+>   into `run_pre_gui_hooks`; the standalone GUI uses a Qt dialog). Enabling `settings.auto_accept`
+>   skips it — hooks then run arbitrary code with no prompt, so restrict `DEADLINE_HOOKS_DIR` to a
+>   trusted directory.
+
 Output JSON to stdout to modify the initial dialog state:
 
 ```python
